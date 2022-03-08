@@ -45,8 +45,8 @@ c
 c              ERHAMB's modifications are:
 c
 c           1/ updated sizes of arrays for transitions and parameters:
-c                    8191 ->  65528
-c                   16383 -> 131056
+c                    8191 ->  8191
+c                   16383 -> 16383
 c                      38 ->  256
 c                      60 ->  512
 c                      80 ->  512
@@ -75,8 +75,8 @@ c      * FMAX(6),THRES(6),NTUP(6),NTE(6),NSIG(6),ISIG(4,10,6),FRQ(8191),
 c      * WT(8191),BL(8191),ITRA(8,8191),ILEV(2,16383),DIP(3)
       DIMENSION A(512,6),INPAR(256,6),IVR(512,6),JMIN(6),JMAX(6),                        ! bl
      * FMIN(6),FMAX(6),THRES(6),NTUP(6),NTE(6),NSIG(6),                                  ! bl
-     * ISIG(4,10,6),FRQ(65528),WT(65528),BL(65528),                                      ! bl
-     * ITRA(8,65528),ILEV(2,131056),DIP(3),SCP(512)                                      ! bl
+     * ISIG(4,10,6),FRQ(8191),WT(8191),BL(8191),                                      ! bl
+     * ITRA(8,8191),ILEV(2,16383),DIP(3),SCP(512)                                      ! bl
 ce 5/20/13
       DIMENSION IVL(8)
       CHARACTER*10 IB
@@ -472,7 +472,7 @@ c  solves the non-linear least-squares problem of determining spectroscopic
 c  parameters from the observed transition frequencies by iteration
       IMPLICIT REAL(8) (A-H,O-Z)
  
-      PARAMETER (maxlin=65528)                                                     ! zk  ! bl
+      PARAMETER (maxlin=8191)                                                     ! zk  ! bl
       COMMON /SORTCC/OMINC,IPT                                                     ! zk
       INTEGER*2 IPT(maxlin)                                                        ! zk
       REAL*8    OMINC(maxlin)                                                      ! zk
@@ -487,9 +487,9 @@ ce 5/20/13
       CHARACTER*1 LBL(241)
       COMMON B(2,2048,2048),D1(2048,2048),D2(2048,2048),PHI1(4096),PHI2(4096),           ! bl
      *     EV(2048,2048),U(2,2048,2048),E(2048),EJ(2048),H(2,2048,2048),                 ! bl
-     *     EW(2048,2048),EX(2048,2048),EZ(8191),DER(65528,512),CALC(65528),              ! bl
-     *     AUX(65528),STER(512),CORR(1024),JCR(512)                                      ! bl
-      DATA NTRX,MS1,MS2,MS4/65528,8,128,16384/
+     *     EW(2048,2048),EX(2048,2048),EZ(8191),DER(8191,512),CALC(8191),              ! bl
+     *     AUX(8191),STER(512),CORR(1024),JCR(512)                                      ! bl
+      DATA NTRX,MS1,MS2,MS4/8191,8,128,16384/
       DATA NU,ZERO,ONE,PI/2048,0D0,1D0,3.141592653589793D0/                              ! bl
       DATA TT/'RHO1','RHO2','BETA1','BETA2','ALPHA1','ALPHA2','A','B',
      *'C','DELTA J','DELTA JK','DELTA K','DDELTA J','DDELTA K','PHI J',
@@ -1942,7 +1942,7 @@ c      2   ILEV(2,1),NSIG(1),ISIG(4,10,1),SPAR(33),IGR(33),DIP(1)
      3   SCC(512,6)                                                                      ! bl
 ce 5/20/13
       LOGICAL LISC
-      DATA NTRX,MS1,MS2,MS4/65528,8,128,16384/                                           ! bl
+      DATA NTRX,MS1,MS2,MS4/8191,8,128,16384/                                           ! bl
       DATA JMX,ZERO,ONE,TWO,PI/120,0D0,1D0,2D0,3.141592653589793D0/
   900 FORMAT(1X,10A8)
   901 FORMAT(/' **** CALCULATION FOR ',A4,'EQUIVALENT MOTIONS ****'//
@@ -3702,7 +3702,7 @@ c...Sort and list worst fitting lines
 c
       IMPLICIT INTEGER*2 (I-N)
       INTEGER*4 maxlin                                                                   ! bl
-      PARAMETER (maxlin=65528,lastl=50)                                                  ! bl
+      PARAMETER (maxlin=8191,lastl=50)                                                  ! bl
 c
       COMMON /SORTCC/OMINC,IPT
       INTEGER*2 IPT(maxlin)
@@ -3730,7 +3730,7 @@ c
       SUBROUTINE SORTC(N,M)
       IMPLICIT INTEGER*2 (I-N)
       INTEGER*4 maxlin                                                                   ! bl
-      PARAMETER (maxlin=65528)                                                           ! bl
+      PARAMETER (maxlin=8191)                                                           ! bl
 c
       COMMON /SORTCC/WK,IPT
       INTEGER*2 IPT(maxlin)                                                               ! bl
