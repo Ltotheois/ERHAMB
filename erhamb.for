@@ -45,15 +45,16 @@ c
 c              ERHAMB's modifications are:
 c
 c           1/ updated sizes of arrays for transitions and parameters:
-c                    8191 ->  8191
-c                   16383 -> 16383
-c                      38 ->  256
-c                      60 ->  512
-c                      80 ->  512
-c                     160 -> 1024
-c                     243 -> 2048
-c                     485 -> 4096
-c                     972 -> 3000
+c                    8191 -> 16383
+c                   16383 -> 32767
+c                      38 ->   256
+c                      60 ->   512
+c                      80 ->   512
+c                     160 ->  1024
+c                     243 ->  2048
+c                     485 ->  4096
+c                     972 ->  3000
+c              NOTE: Always search and replace also one higher number (e.g. for 8191 also search 8192)
 c           2/ changed random to random_number
 c           3/ changed units for in and out files from 5, 6, and 7 to 15, 16, and 17 respectively
 c           4/ changed number of transitions for cat file to 1000000
@@ -75,8 +76,8 @@ c      * FMAX(6),THRES(6),NTUP(6),NTE(6),NSIG(6),ISIG(4,10,6),FRQ(8191),
 c      * WT(8191),BL(8191),ITRA(8,8191),ILEV(2,16383),DIP(3)
       DIMENSION A(512,6),INPAR(256,6),IVR(512,6),JMIN(6),JMAX(6),                        ! bl
      * FMIN(6),FMAX(6),THRES(6),NTUP(6),NTE(6),NSIG(6),                                  ! bl
-     * ISIG(4,10,6),FRQ(8191),WT(8191),BL(8191),                                      ! bl
-     * ITRA(8,8191),ILEV(2,16383),DIP(3),SCP(512)                                      ! bl
+     * ISIG(4,10,6),FRQ(16383),WT(16383),BL(16383),                                      ! bl
+     * ITRA(8,16383),ILEV(2,32767),DIP(3),SCP(512)                                      ! bl
 ce 5/20/13
       DIMENSION IVL(8)
       CHARACTER*10 IB
@@ -472,10 +473,10 @@ c  solves the non-linear least-squares problem of determining spectroscopic
 c  parameters from the observed transition frequencies by iteration
       IMPLICIT REAL(8) (A-H,O-Z)
  
-      PARAMETER (maxlin=8191)                                                     ! zk  ! bl
+      PARAMETER (maxlin=16383)                                                     ! zk  ! bl
       COMMON /SORTCC/OMINC,IPT                                                     ! zk
-      INTEGER*2 IPT(maxlin)                                                        ! zk
-      REAL*8    OMINC(maxlin)                                                      ! zk
+      INTEGER*2 IPT(16383)                                                         ! zk
+      REAL*8    OMINC(16383)                                                       ! zk
 
 c  5/20/13
 c       DIMENSION A(50,1),FRQ(1),ITRA(8,1),WT(1),INPAR(34,1),IVR(50,1),
@@ -487,9 +488,9 @@ ce 5/20/13
       CHARACTER*1 LBL(241)
       COMMON B(2,2048,2048),D1(2048,2048),D2(2048,2048),PHI1(4096),PHI2(4096),           ! bl
      *     EV(2048,2048),U(2,2048,2048),E(2048),EJ(2048),H(2,2048,2048),                 ! bl
-     *     EW(2048,2048),EX(2048,2048),EZ(8191),DER(8191,512),CALC(8191),              ! bl
-     *     AUX(8191),STER(512),CORR(1024),JCR(512)                                      ! bl
-      DATA NTRX,MS1,MS2,MS4/8191,8,128,16384/
+     *     EW(2048,2048),EX(2048,2048),EZ(16383),DER(16383,512),CALC(16383),             ! bl
+     *     AUX(16383),STER(512),CORR(1024),JCR(512)                                      ! bl
+      DATA NTRX,MS1,MS2,MS4/16383,8,128,32768/                                           ! bl
       DATA NU,ZERO,ONE,PI/2048,0D0,1D0,3.141592653589793D0/                              ! bl
       DATA TT/'RHO1','RHO2','BETA1','BETA2','ALPHA1','ALPHA2','A','B',
      *'C','DELTA J','DELTA JK','DELTA K','DDELTA J','DDELTA K','PHI J',
@@ -663,17 +664,17 @@ ce 5/20/13
             IBL=I+1
    90       CONTINUE
 
-         WRITE (16,'(a,i5,a,f12.5)')' Maximum (obs-calc)/err: line',                 ! zk
+         WRITE (16,'(a,i5,a,f12.5)')' Maximum (obs-calc)/err: line',               ! zk
      *     nworst,' =',eworst                                                      ! zk
          smicr=sqrt(smicr/ninfit)                                                  ! zk
          srms=sqrt(srms/ninfit)                                                    ! zk
-         WRITE (*,'(1x/a,i13/a,F20.6,a/a,F20.6,a/)')                                ! zk
+         WRITE (*,'(1x/a,i13/a,F20.6,a/a,F20.6,a/)')                               ! zk
      *   '  Lines fitted =',ninfit,                                                ! zk
      *   ' MICROWAVE RMS =',smicr,                                                 ! zk
      *                          ' MHz   = [(sum(o-c)^2)/n]^(1/2)',                 ! zk
      *   '     RMS ERROR =',srms,                                                  ! zk
      *                          '       = [(sum((o-c)/err)^2)/n]^(1/2)'            ! zk
-         WRITE (16,'(1x/a,i13/a,F20.6,a/a,F20.6,a/)')                                ! zk
+         WRITE (16,'(1x/a,i13/a,F20.6,a/a,F20.6,a/)')                              ! zk
      *   '  Lines fitted =',ninfit,                                                ! zk
      *   ' MICROWAVE RMS =',smicr,                                                 ! zk
      *                          ' MHz   = [(sum(o-c)^2)/n]^(1/2)',                 ! zk
@@ -1513,7 +1514,7 @@ ce 5/20/13
       CHARACTER*1 LBL(241)
       COMMON B(2,2048,2048),D1(2048,2048),D2(2048,2048),PHI1(4096),PHI2(4096),           ! bl
      *     EV(2048,2048),U(2,2048,2048),E(2048),EJ(2048),H(2,2048,2048),                 ! bl
-     *     EW(2048,2048),EX(2048,2048),EZ(8191),EE(2048),DER(2048,512),                  ! bl
+     *     EW(2048,2048),EX(2048,2048),EZ(16383),EE(2048),DER(2048,512),                 ! bl
      *     DERJ(2048,512),VCM(512,512),LBJ(241),LB(241)                                  ! bl
       COMPLEX(8) UC(2048,2048),HC(2048,2048),S1C,S2C,S3C                                 ! bl
       EQUIVALENCE (H,HC),(U,UC)
@@ -1942,7 +1943,7 @@ c      2   ILEV(2,1),NSIG(1),ISIG(4,10,1),SPAR(33),IGR(33),DIP(1)
      3   SCC(512,6)                                                                      ! bl
 ce 5/20/13
       LOGICAL LISC
-      DATA NTRX,MS1,MS2,MS4/8191,8,128,16384/                                           ! bl
+      DATA NTRX,MS1,MS2,MS4/16383,8,128,32768/                                           ! bl
       DATA JMX,ZERO,ONE,TWO,PI/120,0D0,1D0,2D0,3.141592653589793D0/
   900 FORMAT(1X,10A8)
   901 FORMAT(/' **** CALCULATION FOR ',A4,'EQUIVALENT MOTIONS ****'//
@@ -2492,7 +2493,7 @@ c
 c
 c   RE: Tunneling parameters (non-equivalent rotors)
 c
-                  IQ=MOD(INPAR(KP-21,IV)/256,16384)
+                  IQ=MOD(INPAR(KP-21,IV)/256,32768)                                       ! bl
                   IQ=IABS(MOD(IQ/1024,16)-MOD(IQ/64,16))*245760
                   DO 180 JP=22,21+NTUP(IV)
                    IF (IABS(INPAR(KP-21,IV)-INPAR(JP-21,IV)).EQ.IQ) THEN
@@ -3702,11 +3703,11 @@ c...Sort and list worst fitting lines
 c
       IMPLICIT INTEGER*2 (I-N)
       INTEGER*4 maxlin                                                                   ! bl
-      PARAMETER (maxlin=8191,lastl=50)                                                  ! bl
+      PARAMETER (maxlin=16383,lastl=50)                                                  ! bl
 c
       COMMON /SORTCC/OMINC,IPT
-      INTEGER*2 IPT(maxlin)
-      REAL*8    OMINC(maxlin)
+      INTEGER*2 IPT(16383)
+      REAL*8    OMINC(16383)
 c
       CALL SORTC(1,NLIN)
       WRITE (16,1)
@@ -3730,11 +3731,11 @@ c
       SUBROUTINE SORTC(N,M)
       IMPLICIT INTEGER*2 (I-N)
       INTEGER*4 maxlin                                                                   ! bl
-      PARAMETER (maxlin=8191)                                                           ! bl
+      PARAMETER (maxlin=16383)                                                           ! bl
 c
       COMMON /SORTCC/WK,IPT
-      INTEGER*2 IPT(maxlin)                                                               ! bl
-      REAL*8    WK(maxlin),EE                                                             ! bl
+      INTEGER*2 IPT(16383)                                                               ! bl
+      REAL*8    WK(16383),EE                                                             ! bl
 c
 c ... This routine sorts the ABSOLUTE values of the quantities in vector WK in 
 c     ascending order
